@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Love Signal Tarot | 무료 연애 타로</title>
+  <meta name="description" content="그 사람의 속마음이 궁금할 때, Love Signal Tarot에서 무료 연애 타로 카드를 뽑아보세요." />
+
+  <style>
+    :root {
+      --bg: #fffafc;
+      --paper: rgba(255, 255, 255, 0.92);
+      --ink: #2a1722;
+      --muted: #725866;
+      --magenta: #d81b60;
+      --magenta-dark: #a91049;
+      --magenta-soft: #f7c2d5;
+      --pink-light: #fff1f6;
+      --line: #f1a9c4;
+      --gold: #c59a46;
+      --shadow: 0 22px 60px rgba(112, 18, 61, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(216, 27, 96, .16), transparent 32%),
+        radial-gradient(circle at 90% 10%, rgba(197, 154, 70, .14), transparent 24%),
+        linear-gradient(180deg, #fffafc 0%, #fff2f7 55%, #fffafc 100%);
+      padding: 18px;
+      line-height: 1.65;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(216,27,96,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(216,27,96,.035) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.55), transparent 70%);
+    }
+
+    .site {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: var(--paper);
+      border: 1px solid rgba(243, 182, 204, .92);
+      border-radius: 34px;
+      padding: 44px 24px 34px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "✦";
+      position: absolute;
+      color: rgba(216, 27, 96, .16);
+      font-size: 80px;
+      line-height: 1;
+    }
+
+    .hero::before { left: 18px; top: 18px; }
+    .hero::after { right: 18px; bottom: 6px; transform: rotate(22deg); }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 15px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff7fa;
+      color: var(--magenta);
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", "Noto Serif KR", serif;
+      font-size: clamp(40px, 8vw, 72px);
+      line-height: .98;
+      letter-spacing: -0.045em;
+      color: #2c1421;
+      margin-bottom: 18px;
+    }
+
+    .line {
+      width: 98px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, var(--magenta), transparent);
+      margin: 0 auto 18px;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 2;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .panel {
+      margin-top: 22px;
+      background: var(--paper);
+      border: 1px solid rgba(246, 214, 225, .98);
+      border-radius: 30px;
+      padding: 24px;
+      box-shadow: 0 16px 45px rgba(42, 23, 34, .06);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-head {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .panel h2 {
+      font-size: 22px;
+      color: var(--magenta);
+      margin-bottom: 6px;
+      letter-spacing: -0.03em;
+    }
+
+    .panel .sub {
+      color: #806674;
+      font-size: 14px;
+    }
+
+    .spread {
+      display: flex;
+      justify-content: center;
+      gap: clamp(10px, 3vw, 26px);
+      flex-wrap: nowrap;
+      padding: 8px 0 4px;
+    }
+
+    .card-shell {
+      width: min(29vw, 160px);
+      aspect-ratio: 2 / 3.45;
+      perspective: 1000px;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform .72s cubic-bezier(.2, .8, .2, 1);
+      position: relative;
+    }
+
+    .card.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .face {
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      backface-visibility: hidden;
+      box-shadow: 0 18px 34px rgba(216, 27, 96, .23);
+      overflow: hidden;
+    }
+
+    .back {
+      background:
+        radial-gradient(circle at 50% 32%, rgba(255,255,255,.28), transparent 22%),
+        linear-gradient(145deg, #8d0f43 0%, #d81b60 48%, #f06b9b 100%);
+      border: 1px solid rgba(255, 255, 255, .48);
+    }
+
+    .back::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 1px solid rgba(255,255,255,.76);
+      border-radius: 12px;
+    }
+
+    .back::after {
+      content: "♡";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: rgba(255,255,255,.95);
+      font-size: clamp(34px, 8vw, 54px);
+      font-family: Georgia, serif;
+      text-shadow: 0 2px 14px rgba(0,0,0,.15);
+    }
+
+    .corner {
+      position: absolute;
+      color: rgba(255,255,255,.82);
+      font-size: 17px;
+      font-family: Georgia, serif;
+      z-index: 2;
+    }
+
+    .c1 { top: 18px; left: 18px; }
+    .c2 { top: 18px; right: 18px; }
+    .c3 { bottom: 18px; left: 18px; }
+    .c4 { bottom: 18px; right: 18px; }
+
+    .back-title {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 27px;
+      text-align: center;
+      color: #fff;
+      font-family: Georgia, serif;
+      letter-spacing: .16em;
+      font-size: clamp(10px, 2.8vw, 13px);
+      font-weight: 700;
+      z-index: 2;
+    }
+
+    .front {
+      transform: rotateY(180deg);
+      background:
+        radial-gradient(circle at 50% 18%, rgba(216,27,96,.13), transparent 28%),
+        linear-gradient(180deg, #fffdfd 0%, #fff2f7 100%);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 10px;
+      color: var(--ink);
+    }
+
+    .roman {
+      color: var(--magenta);
+      font-family: Georgia, serif;
+      font-weight: 800;
+      font-size: clamp(14px, 3vw, 18px);
+    }
+
+    .symbol {
+      width: 72%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid rgba(216, 27, 96, .25);
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.72);
+      color: var(--magenta);
+      font-size: clamp(31px, 7vw, 52px);
+      box-shadow: inset 0 0 0 8px rgba(255, 242, 247, .78);
+    }
+
+    .front-name {
+      font-size: clamp(10px, 2.5vw, 13px);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: #3b2330;
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    .front-ko {
+      color: var(--magenta-dark);
+      font-size: clamp(10px, 2.4vw, 12px);
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .helper {
+      text-align: center;
+      margin-top: 18px;
+      color: #9a7d8b;
+      font-size: 13px;
+    }
+
+    .result {
+      display: none;
+      margin-top: 24px;
+      padding: 24px;
+      border-radius: 24px;
+      background: #fff7fa;
+      border: 1px solid var(--line);
+      border-left: 7px solid var(--magenta);
+      animation: show .35s ease both;
+    }
+
+    @keyframes show {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-top {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .mini-card {
+      flex: 0 0 74px;
+      aspect-ratio: 2 / 3.45;
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 50% 26%, rgba(255,255,255,.55), transparent 26%),
+        linear-gradient(145deg, #fff 0%, #fff0f6 100%);
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      color: var(--magenta);
+      font-size: 34px;
+      box-shadow: 0 12px 24px rgba(216,27,96,.12);
+    }
+
+    .result h3 {
+      color: var(--magenta);
+      font-size: 24px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      letter-spacing: -0.04em;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: white;
+      color: #9f174e;
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+
+    .reading {
+      white-space: pre-line;
+      color: #48313d;
+      font-size: 15.5px;
+      margin-top: 14px;
+    }
+
+    .deep-box {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 18px;
+      background: white;
+      border: 1px dashed var(--line);
+      color: #6c5060;
+      font-size: 14px;
+    }
+
+    .cta {
+      display: grid;
+      gap: 10px;
+      margin-top: 17px;
+    }
+
+    .btn {
+      display: block;
+      border-radius: 18px;
+      padding: 16px 18px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 15px;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      opacity: .94;
+    }
+
+    .primary {
+      color: white;
+      background: linear-gradient(135deg, var(--magenta), #a91049);
+      box-shadow: 0 14px 28px rgba(216,27,96,.22);
+    }
+
+    .secondary {
+      color: var(--magenta);
+      background: white;
+      border: 1px solid var(--line);
+    }
+
+    .reset {
+      width: 100%;
+      border: 0;
+      margin-top: 10px;
+      background: transparent;
+      color: #9c7185;
+      font-weight: 800;
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    .notice {
+      margin-top: 20px;
+      text-align: center;
+      color: #9a7d8b;
+      font-size: 12.5px;
+      line-height: 1.65;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 26px 10px 18px;
+      color: #aa8999;
+      font-size: 12px;
+    }
+
+    @media (max-width: 520px) {
+      body { padding: 12px; }
+      .hero { border-radius: 28px; padding: 36px 18px 28px; }
+      .panel { border-radius: 26px; padding: 18px; }
+      .spread { gap: 9px; }
+      .card-shell { width: 30.5vw; }
+      .face { border-radius: 15px; }
+      .back::before { inset: 8px; border-radius: 10px; }
+      .corner { font-size: 13px; }
+      .c1 { top: 14px; left: 14px; }
+      .c2 { top: 14px; right: 14px; }
+      .c3 { bottom: 14px; left: 14px; }
+      .c4 { bottom: 14px; right: 14px; }
+      .back-title { bottom: 21px; }
+      .result { padding: 18px; border-radius: 22px; }
+      .mini-card { flex-basis: 62px; font-size: 30px; }
+      .result h3 { font-size: 21px; }
+    }
+
+    .front {
+      padding: 0;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .mini-card {
+      overflow: hidden;
+      background: #fff;
+      padding: 0;
+    }
+
+    .mini-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+  </style>
+</head>
+<body>
+  <main class="site">
+    <section class="hero">
+      <div class="eyebrow">🔮 무료 연애 타로</div>
+      <h1>Love Signal<br>Tarot</h1>
+      <div class="line"></div>
+      <p>
+        지금 그 사람의 마음이 궁금하다면<br>
+        끌리는 카드 한 장을 조용히 선택해보세요.
+      </p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>그 사람 속마음 카드</h2>
+        <p class="sub">눈으로 고르지 말고, 이상하게 마음이 가는 카드를 눌러보세요.</p>
+      </div>
+
+      <div class="spread" aria-label="타로 카드 선택 영역">
+        <div class="card-shell">
+          <button class="card" type="button" onclick="drawCard(this)" aria-label="첫 번째 타로카드 선택">
+            <span class="face back">
+              <span class="corner c1">✦</span><span class="corner c2">☾</span><span class="corner c3">☽</span><span class="corner c4">✦</span>
+              <span class="back-title">LOVE</span>
+            </span>
+            <span class="face front">
+              <span class="roman"></span>
+              <span class="symbol"></span>
+              <span>
+                <span class="front-name"></span>
+                <span class="front-ko"></span>
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <div class="card-shell">
+          <button class="card" type="button" onclick="drawCard(this)" aria-label="두 번째 타로카드 선택">
+            <span class="face back">
+              <span class="corner c1">✦</span><span class="corner c2">☾</span><span class="corner c3">☽</span><span class="corner c4">✦</span>
+              <span class="back-title">SIGNAL</span>
+            </span>
+            <span class="face front">
+              <span class="roman"></span>
+              <span class="symbol"></span>
+              <span>
+                <span class="front-name"></span>
+                <span class="front-ko"></span>
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <div class="card-shell">
+          <button class="card" type="button" onclick="drawCard(this)" aria-label="세 번째 타로카드 선택">
+            <span class="face back">
+              <span class="corner c1">✦</span><span class="corner c2">☾</span><span class="corner c3">☽</span><span class="corner c4">✦</span>
+              <span class="back-title">TAROT</span>
+            </span>
+            <span class="face front">
+              <span class="roman"></span>
+              <span class="symbol"></span>
+              <span>
+                <span class="front-name"></span>
+                <span class="front-ko"></span>
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <p class="helper" id="helper">카드를 누르면 바로 결과가 열립니다.</p>
+
+      <section class="result" id="result" aria-live="polite">
+        <div class="result-top">
+          <div class="mini-card" id="miniSymbol">♡</div>
+          <div>
+            <h3 id="cardName">카드 이름</h3>
+            <span class="tag" id="keyword">키워드</span>
+          </div>
+        </div>
+
+        <p class="reading" id="cardText"></p>
+
+        <div class="deep-box">
+          이 해석은 전체 리딩의 일부입니다.<br>
+          상대의 현재 감정, 연락 가능성, 재회 흐름을 더 자세히 보고 싶다면 카카오톡으로 질문 1개를 남겨주세요.
+        </div>
+
+        <div class="cta">
+          <a class="btn primary" href="https://open.kakao.com/o/gfq6gXyi" target="_blank" rel="noopener">💌 그 사람 속마음 더 자세히 보기</a>
+        </div>
+
+        <button class="reset" type="button" onclick="resetCards()">다시 뽑기</button>
+
+        <p class="notice">
+          무료상담은 질문 1개 기준입니다.<br>
+          자세한 속마음·재회 흐름·관계 분석은 유료상담으로 안내될 수 있습니다.
+        </p>
+      </section>
+    </section>
+
+    <footer class="footer">
+      Love Signal Tarot © 2026
+    </footer>
+  </main>
+
+  <script>
+    const cards = [
+      { roman:"0", symbol:"🕊", image:"images/fool.webp", name:"The Fool", ko:"바보", keyword:"새로운 시작 · 가벼운 마음 · 가능성", text:"이 관계는 아직 완전히 끝났다고 보기 어렵습니다.
+
+상대는 깊게 계산하기보다 순간의 감정과 분위기에 따라 움직이는 흐름이 강합니다. 지금은 무겁게 몰아붙이기보다 가볍게 다시 연결될 여지를 남기는 쪽이 좋습니다." },
+      { roman:"I", symbol:"✦", image:"images/magician.webp", name:"The Magician", ko:"마법사", keyword:"연락 가능성 · 말의 힘 · 시작점", text:"상대는 당신을 완전히 무관심하게 보고 있지는 않습니다.
+
+대화의 문이 열리면 흐름이 다시 움직일 수 있습니다. 먼저 연락한다면 감정 호소보다 짧고 자연스러운 한마디가 더 효과적입니다." },
+      { roman:"II", symbol:"☾", image:"images/high_priestess.webp", name:"The High Priestess", ko:"여사제", keyword:"숨겨진 마음 · 침묵 · 관찰", text:"상대는 마음을 쉽게 드러내지 않고 있습니다.
+
+겉으로는 차갑거나 무심해 보여도 속으로는 정리되지 않은 감정이 남아 있을 수 있습니다. 지금은 추궁보다 기다림과 관찰이 필요한 카드입니다." },
+      { roman:"III", symbol:"🌹", image:"images/empress.webp", name:"The Empress", ko:"여황제", keyword:"호감 · 매력 · 따뜻한 감정", text:"상대에게 당신은 편안하고 매력적인 이미지로 남아 있습니다.
+
+관계를 다시 부드럽게 만들 가능성이 있습니다. 너무 계산적으로 접근하기보다 따뜻한 분위기를 회복하는 것이 중요합니다." },
+      { roman:"IV", symbol:"♛", image:"images/emperor.webp", name:"The Emperor", ko:"황제", keyword:"자존심 · 통제 · 고집", text:"상대는 감정보다 자존심과 현실 판단을 앞세우고 있습니다.
+
+마음이 있어도 쉽게 숙이거나 먼저 움직이려 하지 않을 수 있습니다. 설득보다 상대가 스스로 움직일 명분을 주는 편이 낫습니다." },
+      { roman:"V", symbol:"🗝", image:"images/hierophant.webp", name:"The Hierophant", ko:"교황", keyword:"관계의 기준 · 안정 · 조언", text:"상대는 이 관계를 가볍게만 보고 있지는 않습니다.
+
+다만 안정감, 신뢰, 현실적인 기준을 중요하게 생각합니다. 감정만 앞세우기보다 관계를 어떻게 다시 안정시킬 수 있을지 보여주는 것이 좋습니다." },
+      { roman:"VI", symbol:"♡", image:"images/lovers.webp", name:"The Lovers", ko:"연인", keyword:"강한 끌림 · 선택 · 갈림길", text:"서로의 끌림은 남아 있습니다.
+
+하지만 이 카드는 선택의 순간도 함께 의미합니다. 상대가 당신을 생각하더라도 지금 관계를 이어갈지, 멈출지 사이에서 흔들리고 있을 가능성이 큽니다." },
+      { roman:"VII", symbol:"➳", image:"images/chariot.webp", name:"The Chariot", ko:"전차", keyword:"움직임 · 추진력 · 연락", text:"관계가 멈춰 있는 것처럼 보여도 다시 움직일 수 있는 기운이 있습니다.
+
+다만 감정적으로 휘둘리기보다는 방향을 분명히 잡아야 합니다. 연락을 한다면 애매한 말보다 목적이 분명한 한마디가 좋습니다." },
+      { roman:"VIII", symbol:"∞", image:"images/strength.webp", name:"Strength", ko:"힘", keyword:"참는 마음 · 부드러운 설득 · 인내", text:"상대에게는 아직 감정이 남아 있지만, 쉽게 표현하지 않으려는 모습이 보입니다.
+
+강하게 밀어붙이면 오히려 멀어질 수 있습니다. 부드럽고 여유 있는 태도가 관계 회복에 더 유리합니다." },
+      { roman:"IX", symbol:"🕯", image:"images/hermit.webp", name:"The Hermit", ko:"은둔자", keyword:"거리두기 · 생각 정리 · 혼자만의 시간", text:"상대는 지금 감정을 정리하거나 혼자 있고 싶은 상태일 수 있습니다.
+
+연락이 늦거나 반응이 차갑더라도 꼭 무관심이라고 단정하긴 어렵습니다. 지금은 조급함을 줄이는 것이 중요합니다." },
+      { roman:"X", symbol:"◎", image:"images/wheel_of_fortune.webp", name:"Wheel of Fortune", ko:"운명의 수레바퀴", keyword:"흐름 변화 · 타이밍 · 전환", text:"관계의 흐름이 바뀔 가능성이 있습니다.
+
+예상치 못한 연락이나 우연한 계기로 다시 연결될 수 있습니다. 다만 타이밍의 영향을 크게 받기 때문에 억지로 끌고 가기보다 흐름을 읽는 것이 좋습니다." },
+      { roman:"XI", symbol:"⚖", image:"images/justice.webp", name:"Justice", ko:"정의", keyword:"판단 · 균형 · 이유 있는 거리감", text:"상대는 지금 감정보다 ‘이 관계가 맞는가’를 판단하고 있습니다.
+
+과거에 서운했던 일이나 균형이 깨진 부분을 떠올릴 수 있습니다. 관계를 회복하려면 감정 표현보다 문제를 인정하는 태도가 필요합니다." },
+      { roman:"XII", symbol:"⌛", image:"images/hanged_man.webp", name:"The Hanged Man", ko:"매달린 사람", keyword:"멈춤 · 기다림 · 관점 전환", text:"현재 관계는 답답하게 멈춰 있는 흐름입니다.
+
+하지만 완전한 끝이라기보다 생각의 전환이 필요한 시기입니다. 지금 당장 결과를 보려 하기보다 상대의 입장에서 상황을 다시 보는 것이 도움이 됩니다." },
+      { roman:"XIII", symbol:"☠", image:"images/death.webp", name:"Death", ko:"죽음", keyword:"끝과 변화 · 정리 · 새 국면", text:"이전과 같은 방식으로는 관계를 이어가기 어렵습니다.
+
+하지만 이 카드는 단순한 이별만 뜻하지 않습니다. 낡은 패턴을 끝내고 다른 방식으로 다시 시작해야 한다는 신호일 수 있습니다." },
+      { roman:"XIV", symbol:"☯", image:"images/temperance.webp", name:"Temperance", ko:"절제", keyword:"회복 · 조율 · 천천히 가까워짐", text:"관계가 서서히 회복될 수 있는 카드입니다.
+
+급하게 답을 내리기보다 감정의 온도를 맞추는 시간이 필요합니다. 작은 연락, 짧은 대화, 부담 없는 연결이 더 좋은 흐름을 만듭니다." },
+      { roman:"XV", symbol:"⛓", image:"images/devil.webp", name:"The Devil", ko:"악마", keyword:"집착 · 미련 · 강한 끌림", text:"상대와 당신 사이에는 쉽게 끊기 어려운 끌림이 있습니다.
+
+다만 이 감정은 사랑인지 집착인지 구분이 필요합니다. 다시 연결되더라도 같은 상처가 반복되지 않도록 주의해야 합니다." },
+      { roman:"XVI", symbol:"⚡", image:"images/tower.webp", name:"The Tower", ko:"탑", keyword:"충격 · 갑작스러운 변화 · 깨달음", text:"관계에 큰 흔들림이 있었거나 앞으로 갑작스러운 변화가 생길 수 있습니다.
+
+지금은 억지로 붙잡기보다 무엇이 무너졌는지 정확히 보는 것이 우선입니다. 진짜 회복은 그다음에 가능합니다." },
+      { roman:"XVII", symbol:"☆", image:"images/star.webp", name:"The Star", ko:"별", keyword:"희망 · 회복 · 좋은 신호", text:"아직 희망이 남아 있습니다.
+
+상대의 마음이 완전히 닫힌 것은 아닐 수 있습니다. 다만 별 카드는 천천히 회복되는 카드라서 즉각적인 답보다 부드러운 가능성을 의미합니다." },
+      { roman:"XVIII", symbol:"☽", image:"images/moon.webp", name:"The Moon", ko:"달", keyword:"불안 · 오해 · 숨은 감정", text:"현재 상황에는 불확실한 부분이 많습니다.
+
+상대의 말과 행동이 헷갈리게 느껴질 수 있고, 당신도 불안 때문에 더 크게 해석하고 있을 수 있습니다. 확인되지 않은 상상으로 결론내리지 않는 것이 좋습니다." },
+      { roman:"XIX", symbol:"☀", image:"images/sun.webp", name:"The Sun", ko:"태양", keyword:"긍정 · 솔직함 · 밝은 흐름", text:"좋은 카드입니다.
+
+상대와의 관계에 밝은 기운이 있습니다. 솔직한 대화가 이루어진다면 오해가 풀리거나 분위기가 훨씬 가벼워질 수 있습니다. 숨기기보다 명확하고 따뜻한 표현이 좋습니다." },
+      { roman:"XX", symbol:"🔔", image:"images/judgement.webp", name:"Judgement", ko:"심판", keyword:"재회 · 연락 · 다시 떠오르는 감정", text:"과거의 인연이 다시 떠오르는 카드입니다.
+
+재회나 연락 가능성을 볼 때 꽤 강한 신호로 볼 수 있습니다. 다만 그냥 돌아가는 것이 아니라, 과거 문제를 다시 마주해야 한다는 뜻도 함께 있습니다." },
+      { roman:"XXI", symbol:"✺", image:"images/world.webp", name:"The World", ko:"세계", keyword:"완성 · 결론 · 다음 단계", text:"이 관계는 어떤 결론에 가까워지고 있습니다.
+
+좋은 방향이라면 안정적인 관계로 넘어갈 수 있고, 아니라면 깔끔한 정리가 필요할 수 있습니다. 중요한 건 더 이상 애매한 상태로 오래 끌지 않는 것입니다." }
+    ];
+
+    let selected = false;
+
+    function drawCard(button) {
+      if (selected) return;
+      selected = true;
+
+      const card = cards[Math.floor(Math.random() * cards.length)];
+      button.classList.add("is-flipped");
+
+      const front = button.querySelector(".front");
+      front.innerHTML = `<img src="${card.image}" alt="${card.name} ${card.ko}">`;
+
+      document.querySelectorAll(".card").forEach((item) => {
+        if (item !== button) {
+          item.style.opacity = ".45";
+          item.style.pointerEvents = "none";
+        }
+      });
+
+      setTimeout(() => {
+        document.getElementById("helper").innerText = "선택한 카드의 메시지가 열렸습니다.";
+        document.getElementById("miniSymbol").innerHTML = `<img src="${card.image}" alt="${card.name} ${card.ko}">`;
+        document.getElementById("cardName").innerText = `${card.name} · ${card.ko}`;
+        document.getElementById("keyword").innerText = card.keyword;
+        document.getElementById("cardText").innerText = card.text;
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 620);
+    }
+
+    function resetCards() {
+      selected = false;
+      document.getElementById("result").style.display = "none";
+      document.getElementById("helper").innerText = "카드를 누르면 바로 결과가 열립니다.";
+
+      document.querySelectorAll(".card").forEach((item) => {
+        item.classList.remove("is-flipped");
+        item.style.opacity = "1";
+        item.style.pointerEvents = "auto";
+        item.querySelector(".front").innerHTML = `
+          <span class="roman"></span>
+          <span class="symbol"></span>
+          <span>
+            <span class="front-name"></span>
+            <span class="front-ko"></span>
+          </span>
+        `;
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  </script>
+</body>
+</html>
