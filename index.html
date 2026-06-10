@@ -1,394 +1,162 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Love Signal Tarot | 무료 연애 타로</title>
-  <meta name="description" content="그 사람의 속마음이 궁금할 때, Love Signal Tarot에서 무료 연애 타로 카드를 뽑아보세요." />
-  <style>
-    :root {
-      --paper: rgba(255, 255, 255, 0.92);
-      --ink: #2a1722;
-      --muted: #725866;
-      --magenta: #d81b60;
-      --line: #f1a9c4;
-      --shadow: 0 22px 60px rgba(112, 18, 61, 0.12);
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body {
-      min-height: 100vh;
-      color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(216, 27, 96, .16), transparent 32%),
-        radial-gradient(circle at 90% 10%, rgba(197, 154, 70, .14), transparent 24%),
-        linear-gradient(180deg, #fffafc 0%, #fff2f7 55%, #fffafc 100%);
-      padding: 18px;
-      line-height: 1.65;
-    }
-    .site { max-width: 920px; margin: 0 auto; }
-    .hero {
-      background: var(--paper);
-      border: 1px solid rgba(243, 182, 204, .92);
-      border-radius: 34px;
-      padding: 44px 24px 34px;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-    .eyebrow {
-      display: inline-flex;
-      padding: 8px 15px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: #fff7fa;
-      color: var(--magenta);
-      font-weight: 800;
-      font-size: 13px;
-      margin-bottom: 18px;
-    }
-    h1 {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(40px, 8vw, 72px);
-      line-height: .98;
-      letter-spacing: -0.045em;
-      color: #2c1421;
-      margin-bottom: 18px;
-    }
-    .line {
-      width: 98px; height: 3px; border-radius: 999px;
-      background: linear-gradient(90deg, transparent, var(--magenta), transparent);
-      margin: 0 auto 18px;
-    }
-    .hero p { color: var(--muted); font-size: 16px; }
-    .panel {
-      margin-top: 22px;
-      background: var(--paper);
-      border: 1px solid rgba(246, 214, 225, .98);
-      border-radius: 30px;
-      padding: 24px;
-      box-shadow: 0 16px 45px rgba(42, 23, 34, .06);
-    }
-    .panel-head { text-align: center; margin-bottom: 22px; }
-    .panel h2 { font-size: 22px; color: var(--magenta); margin-bottom: 6px; }
-    .panel .sub { color: #806674; font-size: 14px; }
-    .spread {
-      display: flex; justify-content: center; gap: clamp(10px, 3vw, 26px);
-      flex-wrap: nowrap; padding: 8px 0 4px;
-    }
-    .card-shell { width: min(29vw, 160px); aspect-ratio: 2 / 3.45; perspective: 1000px; }
-    .card {
-      width: 100%; height: 100%; border: 0; background: transparent; cursor: pointer;
-      transform-style: preserve-3d;
-      transition: transform .72s cubic-bezier(.2, .8, .2, 1);
-      position: relative;
-    }
-    .card.is-flipped { transform: rotateY(180deg); }
-    .face {
-      position: absolute; inset: 0; border-radius: 18px; backface-visibility: hidden;
-      box-shadow: 0 18px 34px rgba(216, 27, 96, .23);
-      overflow: hidden;
-    }
-    .back {
-      background-image: url("images/card_back.webp");
-      background-size: cover;
-      background-position: center;
-      border: 1px solid rgba(255, 255, 255, .48);
-    }
-    .front { transform: rotateY(180deg); background: #fff; border: 1px solid var(--line); overflow: hidden; padding: 0; }
-    .front img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .helper { text-align: center; margin-top: 18px; color: #9a7d8b; font-size: 13px; }
-    .result {
-      display: none; margin-top: 24px; padding: 24px; border-radius: 24px;
-      background: #fff7fa; border: 1px solid var(--line); border-left: 7px solid var(--magenta);
-      animation: show .35s ease both;
-    }
-    @keyframes show { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .result-top { display: flex; gap: 16px; align-items: center; margin-bottom: 14px; }
-    .mini-card {
-      flex: 0 0 74px; aspect-ratio: 2 / 3.45; border-radius: 12px;
-      background: #fff; border: 1px solid var(--line); overflow: hidden;
-      box-shadow: 0 12px 24px rgba(216,27,96,.12);
-    }
-    .mini-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .result h3 { color: var(--magenta); font-size: 24px; line-height: 1.2; margin-bottom: 6px; }
-    .tag {
-      display: inline-block; padding: 6px 11px; border-radius: 999px;
-      border: 1px solid var(--line); background: white; color: #9f174e;
-      font-size: 12.5px; font-weight: 800;
-    }
-    .reading { white-space: pre-line; color: #48313d; font-size: 15.5px; margin-top: 14px; }
-    .deep-box {
-      margin-top: 18px; padding: 16px; border-radius: 18px; background: white;
-      border: 1px dashed var(--line); color: #6c5060; font-size: 14px;
-    }
-    .cta { display: grid; gap: 10px; margin-top: 17px; }
-    .btn {
-      display: block; border-radius: 18px; padding: 16px 18px; text-align: center;
-      text-decoration: none; font-weight: 900; font-size: 15px; color: white;
-      background: linear-gradient(135deg, var(--magenta), #a91049);
-      box-shadow: 0 14px 28px rgba(216,27,96,.22);
-    }
-    .reset {
-      width: 100%; border: 0; margin-top: 10px; background: transparent;
-      color: #9c7185; font-weight: 800; padding: 12px; cursor: pointer;
-    }
-    .notice { margin-top: 20px; text-align: center; color: #9a7d8b; font-size: 12.5px; line-height: 1.65; }
-    .footer { text-align: center; padding: 26px 10px 18px; color: #aa8999; font-size: 12px; }
-    @media (max-width: 520px) {
-      body { padding: 12px; }
-      .hero { border-radius: 28px; padding: 36px 18px 28px; }
-      .panel { border-radius: 26px; padding: 18px; }
-      .spread { gap: 9px; }
-      .card-shell { width: 30.5vw; }
-      .face { border-radius: 15px; }
-      .result { padding: 18px; border-radius: 22px; }
-      .mini-card { flex-basis: 62px; }
-      .result h3 { font-size: 21px; }
-    }
-  </style>
-</head>
-<body>
-  <main class="site">
-    <section class="hero">
-      <div class="eyebrow">🔮 무료 연애 타로</div>
-      <h1>Love Signal<br>Tarot</h1>
-      <div class="line"></div>
-      <p>지금 그 사람의 마음이 궁금하다면<br>끌리는 카드 한 장을 조용히 선택해보세요.</p>
-    </section>
-
-    <section class="panel">
-      <div class="panel-head">
-        <h2>그 사람 속마음 카드</h2>
-        <p class="sub">눈으로 고르지 말고, 이상하게 마음이 가는 카드를 눌러보세요.</p>
-      </div>
-
-      <div class="spread">
-        <div class="card-shell"><button class="card" type="button" onclick="drawCard(this)"><span class="face back"></span><span class="face front"></span></button></div>
-        <div class="card-shell"><button class="card" type="button" onclick="drawCard(this)"><span class="face back"></span><span class="face front"></span></button></div>
-        <div class="card-shell"><button class="card" type="button" onclick="drawCard(this)"><span class="face back"></span><span class="face front"></span></button></div>
-      </div>
-
-      <p class="helper" id="helper">카드를 누르면 바로 결과가 열립니다.</p>
-
-      <section class="result" id="result">
-        <div class="result-top">
-          <div class="mini-card" id="miniSymbol"></div>
-          <div>
-            <h3 id="cardName">카드 이름</h3>
-            <span class="tag" id="keyword">키워드</span>
-          </div>
-        </div>
-        <p class="reading" id="cardText"></p>
-        <div class="deep-box">
-          이 해석은 전체 리딩의 일부입니다.<br>
-          상대의 현재 감정, 연락 가능성, 재회 흐름을 더 자세히 보고 싶다면 카카오톡으로 질문 1개를 남겨주세요.
-        </div>
-        <div class="cta">
-          <a class="btn" href="https://open.kakao.com/o/pq6UFXyi" target="_blank" rel="noopener">💌 그 사람 속마음 더 자세히 보기</a>
-        </div>
-        <button class="reset" type="button" onclick="resetCards()">다시 뽑기</button>
-        <p class="notice">무료상담은 질문 1개 기준입니다.<br>자세한 속마음·재회 흐름·관계 분석은 유료상담으로 안내될 수 있습니다.</p>
-      </section>
-    </section>
-    <footer class="footer">Love Signal Tarot © 2026</footer>
-  </main>
-
-  <script>
-    const cards = [
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Love Signal Tarot | 무료 연애 타로</title><style>
+:root{--paper:rgba(255,255,255,.92);--ink:#2a1722;--muted:#725866;--magenta:#d81b60;--line:#f1a9c4;--shadow:0 22px 60px rgba(112,18,61,.12)}*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{min-height:100vh;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;background:radial-gradient(circle at top left,rgba(216,27,96,.16),transparent 32%),radial-gradient(circle at 90% 10%,rgba(197,154,70,.14),transparent 24%),linear-gradient(180deg,#fffafc 0%,#fff2f7 55%,#fffafc 100%);padding:18px;line-height:1.65}.site{max-width:920px;margin:0 auto}.hero{background:var(--paper);border:1px solid rgba(243,182,204,.92);border-radius:34px;padding:44px 24px 34px;text-align:center;box-shadow:var(--shadow)}.eyebrow{display:inline-flex;padding:8px 15px;border-radius:999px;border:1px solid var(--line);background:#fff7fa;color:var(--magenta);font-weight:800;font-size:13px;margin-bottom:18px}h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(40px,8vw,72px);line-height:.98;letter-spacing:-.045em;color:#2c1421;margin-bottom:18px}.line{width:98px;height:3px;border-radius:999px;background:linear-gradient(90deg,transparent,var(--magenta),transparent);margin:0 auto 18px}.hero p{color:var(--muted);font-size:16px}.panel{margin-top:22px;background:var(--paper);border:1px solid rgba(246,214,225,.98);border-radius:30px;padding:24px;box-shadow:0 16px 45px rgba(42,23,34,.06)}.panel-head{text-align:center;margin-bottom:22px}.panel h2{font-size:22px;color:var(--magenta);margin-bottom:6px}.panel .sub{color:#806674;font-size:14px}.spread{display:flex;justify-content:center;gap:clamp(10px,3vw,26px);flex-wrap:nowrap;padding:8px 0 4px}.card-shell{width:min(29vw,160px);aspect-ratio:2/3.45;perspective:1000px}.card{width:100%;height:100%;border:0;background:transparent;cursor:pointer;transform-style:preserve-3d;transition:transform .72s cubic-bezier(.2,.8,.2,1);position:relative}.card.is-flipped{transform:rotateY(180deg)}.face{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;box-shadow:0 18px 34px rgba(216,27,96,.23);overflow:hidden}.back{background-image:url("images/card_back.png");background-size:cover;background-position:center;border:1px solid rgba(255,255,255,.48)}.front{transform:rotateY(180deg);background:#fff;border:1px solid var(--line);overflow:hidden;padding:0}.front img{width:100%;height:100%;object-fit:cover;display:block}.helper{text-align:center;margin-top:18px;color:#9a7d8b;font-size:13px}.result{display:none;margin-top:24px;padding:24px;border-radius:24px;background:#fff7fa;border:1px solid var(--line);border-left:7px solid var(--magenta);animation:show .35s ease both}@keyframes show{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.result-top{display:flex;gap:16px;align-items:center;margin-bottom:14px}.mini-card{flex:0 0 74px;aspect-ratio:2/3.45;border-radius:12px;background:#fff;border:1px solid var(--line);overflow:hidden;box-shadow:0 12px 24px rgba(216,27,96,.12)}.mini-card img{width:100%;height:100%;object-fit:cover;display:block}.result h3{color:var(--magenta);font-size:24px;line-height:1.2;margin-bottom:6px}.tag{display:inline-block;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:white;color:#9f174e;font-size:12.5px;font-weight:800}.reading{white-space:pre-line;color:#48313d;font-size:15.5px;margin-top:14px}.deep-box{margin-top:18px;padding:16px;border-radius:18px;background:white;border:1px dashed var(--line);color:#6c5060;font-size:14px}.cta{display:grid;gap:10px;margin-top:17px}.btn{display:block;border-radius:18px;padding:16px 18px;text-align:center;text-decoration:none;font-weight:900;font-size:15px;color:white;background:linear-gradient(135deg,var(--magenta),#a91049);box-shadow:0 14px 28px rgba(216,27,96,.22)}.reset{width:100%;border:0;margin-top:10px;background:transparent;color:#9c7185;font-weight:800;padding:12px;cursor:pointer}.notice{margin-top:20px;text-align:center;color:#9a7d8b;font-size:12.5px;line-height:1.65}.footer{text-align:center;padding:26px 10px 18px;color:#aa8999;font-size:12px}@media(max-width:520px){body{padding:12px}.hero{border-radius:28px;padding:36px 18px 28px}.panel{border-radius:26px;padding:18px}.spread{gap:9px}.card-shell{width:30.5vw}.face{border-radius:15px}.result{padding:18px;border-radius:22px}.mini-card{flex-basis:62px}.result h3{font-size:21px}}</style></head><body><main class="site"><section class="hero"><div class="eyebrow">🔮 무료 연애 타로</div><h1>Love Signal<br>Tarot</h1><div class="line"></div><p>지금 그 사람의 마음이 궁금하다면<br>끌리는 카드 한 장을 조용히 선택해보세요.</p></section><section class="panel"><div class="panel-head"><h2>그 사람 속마음 카드</h2><p class="sub">눈으로 고르지 말고, 이상하게 마음이 가는 카드를 눌러보세요.</p></div><div class="spread"><div class="card-shell"><button class="card" type="button" onclick="drawCard(this)"><span class="face back"></span><span class="face front"></span></button></div><div class="card-shell"><button class="card" type="button" onclick="drawCard(this)"><span class="face back"></span><span class="face front"></span></button></div><div class="card-shell"><button class="card" type="button" onclick="drawCard(this)"><span class="face back"></span><span class="face front"></span></button></div></div><p class="helper" id="helper">카드를 누르면 바로 결과가 열립니다.</p><section class="result" id="result"><div class="result-top"><div class="mini-card" id="miniSymbol"></div><div><h3 id="cardName">카드 이름</h3><span class="tag" id="keyword">키워드</span></div></div><p class="reading" id="cardText"></p><div class="deep-box">이 해석은 전체 리딩의 일부입니다.<br>상대의 현재 감정, 연락 가능성, 재회 흐름을 더 자세히 보고 싶다면 카카오톡으로 질문 1개를 남겨주세요.</div><div class="cta"><a class="btn" href="https://open.kakao.com/o/pq6UFXyi" target="_blank" rel="noopener">💌 그 사람 속마음 더 자세히 보기</a></div><button class="reset" type="button" onclick="resetCards()">다시 뽑기</button><p class="notice">무료상담은 질문 1개 기준입니다.<br>자세한 속마음·재회 흐름·관계 분석은 유료상담으로 안내될 수 있습니다.</p></section></section><footer class="footer">Love Signal Tarot © 2026</footer></main><script>
+const cards = [
       {
-            "image": "images/fool.webp",
+            "image": "images/fool.png",
             "name": "The Fool",
             "ko": "바보",
             "keyword": "새로운 시작 · 가벼운 마음 · 가능성",
-            "text": "이 관계는 아직 완전히 끝났다고 보기 어렵습니다.\n\n상대는 깊게 계산하기보다 순간의 감정과 분위기에 따라 움직이는 흐름이 강합니다. 지금은 무겁게 몰아붙이기보다 가볍게 다시 연결될 여지를 남기는 쪽이 좋습니다."
+            "text": "상대는 이 관계를 완전히 끝냈다기보다 아직 마음의 방향을 정하지 못한 상태로 보여요.\n\n당신을 떠올리는 순간은 있지만 깊게 파고들기보다 가볍게 흘려보내려는 모습이 강합니다.\n\n지금 무겁게 붙잡거나 감정을 확인하려 하면 오히려 부담을 느낄 수 있어요.\n\n가벼운 안부나 자연스러운 계기가 생길 때 관계가 다시 움직일 가능성이 있습니다."
       },
       {
-            "image": "images/magician.webp",
+            "image": "images/magician.png",
             "name": "The Magician",
             "ko": "마법사",
             "keyword": "연락 가능성 · 말의 힘 · 시작점",
-            "text": "상대는 당신을 완전히 무관심하게 보고 있지는 않습니다.\n\n대화의 문이 열리면 흐름이 다시 움직일 수 있습니다. 먼저 연락한다면 감정 호소보다 짧고 자연스러운 한마디가 더 효과적입니다."
+            "text": "상대는 당신에게 완전히 무관심한 상태는 아닙니다.\n\n다만 마음이 있어도 먼저 움직이기보다 상황을 보며 반응하려는 쪽에 가까워요.\n\n이 카드는 말 한마디가 흐름을 바꿀 수 있다는 신호가 강합니다.\n\n감정적인 장문보다 짧고 자연스러운 표현이 상대의 마음을 열 수 있습니다."
       },
       {
-            "image": "images/high_priestess.webp",
+            "image": "images/high_priestess.png",
             "name": "The High Priestess",
             "ko": "여사제",
             "keyword": "숨겨진 마음 · 침묵 · 관찰",
-            "text": "상대는 마음을 쉽게 드러내지 않고 있습니다.\n\n겉으로는 차갑거나 무심해 보여도 속으로는 정리되지 않은 감정이 남아 있을 수 있습니다. 지금은 추궁보다 기다림과 관찰이 필요한 카드입니다."
+            "text": "상대는 지금 자신의 마음을 쉽게 드러내지 않고 있습니다.\n\n겉으로는 차갑거나 무심해 보여도 속으로는 아직 정리되지 않은 감정이 남아 있을 수 있어요.\n\n이 사람은 누가 밀어붙이면 더 닫히는 성향이 강하게 보입니다.\n\n지금은 확인하려 들기보다 상대가 어떤 태도로 흘러가는지 조용히 보는 것이 좋습니다."
       },
       {
-            "image": "images/empress.webp",
+            "image": "images/empress.png",
             "name": "The Empress",
             "ko": "여황제",
             "keyword": "호감 · 매력 · 따뜻한 감정",
-            "text": "상대에게 당신은 편안하고 매력적인 이미지로 남아 있습니다.\n\n관계를 다시 부드럽게 만들 가능성이 있습니다. 너무 계산적으로 접근하기보다 따뜻한 분위기를 회복하는 것이 중요합니다."
+            "text": "상대에게 당신은 아직 따뜻하고 매력적인 이미지로 남아 있습니다.\n\n이 카드는 호감, 그리움, 편안함이 남아 있을 때 자주 나오는 카드예요.\n\n관계를 다시 살리려면 서운함보다 좋은 기억을 먼저 건드리는 것이 중요합니다.\n\n부드러운 분위기를 만들 수 있다면 상대의 마음도 다시 풀릴 가능성이 있습니다."
       },
       {
-            "image": "images/emperor.webp",
+            "image": "images/emperor.png",
             "name": "The Emperor",
             "ko": "황제",
             "keyword": "자존심 · 통제 · 고집",
-            "text": "상대는 감정보다 자존심과 현실 판단을 앞세우고 있습니다.\n\n마음이 있어도 쉽게 숙이거나 먼저 움직이려 하지 않을 수 있습니다. 설득보다 상대가 스스로 움직일 명분을 주는 편이 낫습니다."
+            "text": "상대는 감정이 있어도 쉽게 인정하거나 표현하지 않으려는 모습이 강합니다.\n\n자존심이 앞서 있어서 먼저 연락하거나 숙이는 태도를 보이기 어려울 수 있어요.\n\n지금 이 사람은 마음보다 체면, 상황, 현실적인 판단을 더 크게 보고 있습니다.\n\n압박하기보다 상대가 움직일 명분을 만들어주는 쪽이 더 효과적입니다."
       },
       {
-            "image": "images/hierophant.webp",
+            "image": "images/hierophant.png",
             "name": "The Hierophant",
             "ko": "교황",
-            "keyword": "관계의 기준 · 안정 · 조언",
-            "text": "상대는 이 관계를 가볍게만 보고 있지는 않습니다.\n\n다만 안정감, 신뢰, 현실적인 기준을 중요하게 생각합니다. 감정만 앞세우기보다 관계를 어떻게 다시 안정시킬 수 있을지 보여주는 것이 좋습니다."
+            "keyword": "신뢰 · 안정 · 관계의 기준",
+            "text": "상대는 이 관계를 가볍게만 보지는 않습니다.\n\n다만 감정보다 신뢰, 안정감, 현실적인 기준을 중요하게 생각하고 있어요.\n\n예전의 불안정한 패턴이 반복될 것 같으면 쉽게 다가오지 못할 수 있습니다.\n\n관계를 회복하려면 감정 호소보다 이제는 달라질 수 있다는 안정감을 보여주는 것이 필요합니다."
       },
       {
-            "image": "images/lovers.webp",
+            "image": "images/lovers.png",
             "name": "The Lovers",
             "ko": "연인",
             "keyword": "강한 끌림 · 선택 · 갈림길",
-            "text": "서로의 끌림은 남아 있습니다.\n\n하지만 이 카드는 선택의 순간도 함께 의미합니다. 상대가 당신을 생각하더라도 지금 관계를 이어갈지, 멈출지 사이에서 흔들리고 있을 가능성이 큽니다."
+            "text": "상대와 당신 사이에는 아직 감정적인 끌림이 남아 있습니다.\n\n하지만 이 카드는 단순한 사랑보다 선택의 갈림길을 함께 의미해요.\n\n상대는 마음이 있어도 이 관계를 계속 가져가도 되는지 고민하고 있을 가능성이 큽니다.\n\n지금은 감정을 증명하려 하기보다 다시 편하게 연결될 수 있는 분위기를 만드는 것이 중요합니다."
       },
       {
-            "image": "images/chariot.webp",
+            "image": "images/chariot.png",
             "name": "The Chariot",
             "ko": "전차",
             "keyword": "움직임 · 추진력 · 연락",
-            "text": "관계가 멈춰 있는 것처럼 보여도 다시 움직일 수 있는 기운이 있습니다.\n\n다만 감정적으로 휘둘리기보다는 방향을 분명히 잡아야 합니다. 연락을 한다면 애매한 말보다 목적이 분명한 한마디가 좋습니다."
+            "text": "멈춰 있던 관계가 다시 움직일 수 있는 흐름이 보입니다.\n\n상대 역시 마음속으로는 어떤 방향이든 결정을 내리고 싶어 하는 상태일 수 있어요.\n\n다만 감정에 휘둘리면 다시 충돌이 생길 수 있으니 방향을 분명히 잡아야 합니다.\n\n연락을 한다면 애매한 떠보기보다 짧고 목적이 분명한 말이 좋습니다."
       },
       {
-            "image": "images/strength.webp",
+            "image": "images/strength.png",
             "name": "Strength",
             "ko": "힘",
             "keyword": "참는 마음 · 부드러운 설득 · 인내",
-            "text": "상대에게는 아직 감정이 남아 있지만, 쉽게 표현하지 않으려는 모습이 보입니다.\n\n강하게 밀어붙이면 오히려 멀어질 수 있습니다. 부드럽고 여유 있는 태도가 관계 회복에 더 유리합니다."
+            "text": "상대는 감정이 없어서 가만히 있는 것이 아니라 참고 있는 모습이 강합니다.\n\n마음은 남아 있지만 쉽게 흔들리는 모습을 보이고 싶지 않은 상태예요.\n\n이 카드는 강하게 밀어붙이는 방식보다 부드럽게 마음을 여는 방식이 훨씬 유리합니다.\n\n조급함을 줄이고 여유 있는 태도를 보이면 상대도 조금씩 경계를 낮출 수 있습니다."
       },
       {
-            "image": "images/hermit.webp",
+            "image": "images/hermit.png",
             "name": "The Hermit",
             "ko": "은둔자",
             "keyword": "거리두기 · 생각 정리 · 혼자만의 시간",
-            "text": "상대는 지금 감정을 정리하거나 혼자 있고 싶은 상태일 수 있습니다.\n\n연락이 늦거나 반응이 차갑더라도 꼭 무관심이라고 단정하긴 어렵습니다. 지금은 조급함을 줄이는 것이 중요합니다."
+            "text": "상대는 지금 혼자 생각을 정리하고 싶은 상태로 보입니다.\n\n연락이 없거나 반응이 느리다고 해서 꼭 마음이 없다고 보기는 어려워요.\n\n현재는 누군가의 감정에 끌려가기보다 자기 안에서 답을 찾고 싶어 합니다.\n\n이 시기에는 자주 건드리기보다 한 걸음 물러나 있는 태도가 더 좋은 흐름을 만듭니다."
       },
       {
-            "image": "images/wheel_of_fortune.webp",
+            "image": "images/wheel_of_fortune.png",
             "name": "Wheel of Fortune",
             "ko": "운명의 수레바퀴",
             "keyword": "흐름 변화 · 타이밍 · 전환",
-            "text": "관계의 흐름이 바뀔 가능성이 있습니다.\n\n예상치 못한 연락이나 우연한 계기로 다시 연결될 수 있습니다. 다만 타이밍의 영향을 크게 받기 때문에 억지로 끌고 가기보다 흐름을 읽는 것이 좋습니다."
+            "text": "이 관계는 지금 고정된 상태가 아니라 흐름이 바뀔 수 있는 시점에 있습니다.\n\n예상치 못한 연락이나 우연한 계기로 다시 연결될 가능성도 보여요.\n\n다만 이 카드는 억지로 끌고 가기보다 타이밍을 잘 읽는 것이 중요합니다.\n\n너무 빨리 결론 내리지 말고 관계가 움직일 수 있는 작은 기회를 놓치지 않는 것이 좋습니다."
       },
       {
-            "image": "images/justice.webp",
+            "image": "images/justice.png",
             "name": "Justice",
             "ko": "정의",
             "keyword": "판단 · 균형 · 이유 있는 거리감",
-            "text": "상대는 지금 감정보다 ‘이 관계가 맞는가’를 판단하고 있습니다.\n\n과거에 서운했던 일이나 균형이 깨진 부분을 떠올릴 수 있습니다. 관계를 회복하려면 감정 표현보다 문제를 인정하는 태도가 필요합니다."
+            "text": "상대는 지금 감정보다 이 관계가 맞는가를 냉정하게 판단하고 있습니다.\n\n과거에 서운했던 일이나 균형이 깨졌던 부분을 떠올리고 있을 수 있어요.\n\n이 카드는 단순히 마음이 있냐 없냐보다 관계의 공평함과 책임을 묻는 카드입니다.\n\n다시 가까워지고 싶다면 변명보다 인정과 정리가 먼저 필요합니다."
       },
       {
-            "image": "images/hanged_man.webp",
+            "image": "images/hanged_man.png",
             "name": "The Hanged Man",
             "ko": "매달린 사람",
             "keyword": "멈춤 · 기다림 · 관점 전환",
-            "text": "현재 관계는 답답하게 멈춰 있는 흐름입니다.\n\n하지만 완전한 끝이라기보다 생각의 전환이 필요한 시기입니다. 지금 당장 결과를 보려 하기보다 상대의 입장에서 상황을 다시 보는 것이 도움이 됩니다."
+            "text": "현재 관계는 답답하게 멈춰 있는 흐름입니다.\n\n상대도 쉽게 움직이지 못하고 당신 역시 뚜렷한 답을 얻기 어려운 상태로 보여요.\n\n하지만 이 카드는 끝이라기보다 관점을 바꾸라는 신호에 가깝습니다.\n\n지금 당장 결과를 만들려 하기보다 상대 입장에서 이 관계가 어떻게 보였는지 돌아보는 시간이 필요합니다."
       },
       {
-            "image": "images/death.webp",
+            "image": "images/death.png",
             "name": "Death",
             "ko": "죽음",
             "keyword": "끝과 변화 · 정리 · 새 국면",
-            "text": "이전과 같은 방식으로는 관계를 이어가기 어렵습니다.\n\n하지만 이 카드는 단순한 이별만 뜻하지 않습니다. 낡은 패턴을 끝내고 다른 방식으로 다시 시작해야 한다는 신호일 수 있습니다."
+            "text": "이전과 같은 방식으로는 관계를 이어가기 어렵다는 메시지가 강합니다.\n\n하지만 이 카드는 무조건 끝만 뜻하지는 않아요.\n\n낡은 패턴, 반복된 상처, 애매한 태도를 정리해야 새로운 흐름이 열릴 수 있습니다.\n\n다시 시작하더라도 예전 방식 그대로 돌아가면 같은 문제가 반복될 가능성이 큽니다."
       },
       {
-            "image": "images/temperance.webp",
+            "image": "images/temperance.png",
             "name": "Temperance",
             "ko": "절제",
             "keyword": "회복 · 조율 · 천천히 가까워짐",
-            "text": "관계가 서서히 회복될 수 있는 카드입니다.\n\n급하게 답을 내리기보다 감정의 온도를 맞추는 시간이 필요합니다. 작은 연락, 짧은 대화, 부담 없는 연결이 더 좋은 흐름을 만듭니다."
+            "text": "관계가 서서히 회복될 수 있는 카드입니다.\n\n상대도 극단적으로 마음을 닫았다기보다 감정의 온도를 조절하고 있는 모습이에요.\n\n급하게 답을 요구하면 흐름이 깨질 수 있으니 천천히 균형을 맞추는 것이 중요합니다.\n\n작은 대화, 부담 없는 연락, 편안한 분위기가 관계 회복의 시작점이 될 수 있습니다."
       },
       {
-            "image": "images/devil.webp",
+            "image": "images/devil.png",
             "name": "The Devil",
             "ko": "악마",
             "keyword": "집착 · 미련 · 강한 끌림",
-            "text": "상대와 당신 사이에는 쉽게 끊기 어려운 끌림이 있습니다.\n\n다만 이 감정은 사랑인지 집착인지 구분이 필요합니다. 다시 연결되더라도 같은 상처가 반복되지 않도록 주의해야 합니다."
+            "text": "상대와 당신 사이에는 쉽게 끊기 어려운 강한 끌림이 남아 있습니다.\n\n하지만 이 감정은 순수한 사랑인지, 미련과 집착인지 구분이 필요해요.\n\n다시 연결될 가능성은 있지만 같은 상처가 반복될 위험도 함께 보입니다.\n\n상대의 마음만 보기보다 이 관계가 당신을 건강하게 만드는지도 함께 봐야 합니다."
       },
       {
-            "image": "images/tower.webp",
+            "image": "images/tower.png",
             "name": "The Tower",
             "ko": "탑",
             "keyword": "충격 · 갑작스러운 변화 · 깨달음",
-            "text": "관계에 큰 흔들림이 있었거나 앞으로 갑작스러운 변화가 생길 수 있습니다.\n\n지금은 억지로 붙잡기보다 무엇이 무너졌는지 정확히 보는 것이 우선입니다. 진짜 회복은 그다음에 가능합니다."
+            "text": "이 관계에는 이미 큰 흔들림이 있었거나 갑작스러운 변화가 생길 수 있습니다.\n\n상대도 마음속으로는 충격이나 혼란을 겪고 있을 가능성이 있어요.\n\n지금은 억지로 붙잡기보다 무엇이 무너졌는지를 정확히 보는 것이 먼저입니다.\n\n진짜 회복은 예전 상태로 돌아가는 것이 아니라 무너진 이유를 다시 세우는 데서 시작됩니다."
       },
       {
-            "image": "images/star.webp",
+            "image": "images/star.png",
             "name": "The Star",
             "ko": "별",
             "keyword": "희망 · 회복 · 좋은 신호",
-            "text": "아직 희망이 남아 있습니다.\n\n상대의 마음이 완전히 닫힌 것은 아닐 수 있습니다. 다만 별 카드는 천천히 회복되는 카드라서 즉각적인 답보다 부드러운 가능성을 의미합니다."
+            "text": "아직 희망이 남아 있는 카드입니다.\n\n상대의 마음이 완전히 닫혔다기보다 시간이 지나며 조금씩 부드러워질 가능성이 보여요.\n\n다만 별 카드는 즉각적인 행동보다 천천히 회복되는 흐름에 가깝습니다.\n\n너무 조급하게 확인하려 하기보다 좋은 인상과 여운을 남기는 것이 더 중요합니다."
       },
       {
-            "image": "images/moon.webp",
+            "image": "images/moon.png",
             "name": "The Moon",
             "ko": "달",
             "keyword": "불안 · 오해 · 숨은 감정",
-            "text": "현재 상황에는 불확실한 부분이 많습니다.\n\n상대의 말과 행동이 헷갈리게 느껴질 수 있고, 당신도 불안 때문에 더 크게 해석하고 있을 수 있습니다. 확인되지 않은 상상으로 결론내리지 않는 것이 좋습니다."
+            "text": "지금 상황에는 불확실한 부분이 많습니다.\n\n상대의 말과 행동이 헷갈리게 느껴지고 당신도 불안 때문에 더 크게 해석하고 있을 수 있어요.\n\n상대 역시 자기 마음을 분명하게 정리하지 못한 상태일 가능성이 있습니다.\n\n확인되지 않은 상상으로 결론 내리기보다 감정을 안정시키고 흐름을 더 지켜보는 것이 좋습니다."
       },
       {
-            "image": "images/sun.webp",
+            "image": "images/sun.png",
             "name": "The Sun",
             "ko": "태양",
             "keyword": "긍정 · 솔직함 · 밝은 흐름",
-            "text": "좋은 카드입니다.\n\n상대와의 관계에 밝은 기운이 있습니다. 솔직한 대화가 이루어진다면 오해가 풀리거나 분위기가 훨씬 가벼워질 수 있습니다. 숨기기보다 명확하고 따뜻한 표현이 좋습니다."
+            "text": "좋은 카드입니다. 상대와의 관계에 밝은 기운이 남아 있습니다.\n\n솔직한 대화가 이루어진다면 오해가 풀리거나 분위기가 훨씬 가벼워질 수 있어요.\n\n상대도 당신을 부정적으로만 보고 있지는 않은 흐름입니다.\n\n숨기거나 돌려 말하기보다 따뜻하고 명확한 표현이 관계를 좋게 만들 수 있습니다."
       },
       {
-            "image": "images/judgement.webp",
+            "image": "images/judgement.png",
             "name": "Judgement",
             "ko": "심판",
             "keyword": "재회 · 연락 · 다시 떠오르는 감정",
-            "text": "과거의 인연이 다시 떠오르는 카드입니다.\n\n재회나 연락 가능성을 볼 때 꽤 강한 신호로 볼 수 있습니다. 다만 그냥 돌아가는 것이 아니라, 과거 문제를 다시 마주해야 한다는 뜻도 함께 있습니다."
+            "text": "과거의 인연이 다시 떠오르는 카드입니다.\n\n상대도 당신과의 일을 완전히 묻어둔 상태는 아니며 어떤 계기로 다시 생각하게 될 수 있어요.\n\n재회나 연락 가능성을 볼 때 비교적 강한 신호로 볼 수 있습니다.\n\n다만 그냥 돌아가는 것이 아니라 과거의 문제를 제대로 마주해야 관계가 다시 살아날 수 있습니다."
       },
       {
-            "image": "images/world.webp",
+            "image": "images/world.png",
             "name": "The World",
             "ko": "세계",
             "keyword": "완성 · 결론 · 다음 단계",
-            "text": "이 관계는 어떤 결론에 가까워지고 있습니다.\n\n좋은 방향이라면 안정적인 관계로 넘어갈 수 있고, 아니라면 깔끔한 정리가 필요할 수 있습니다. 중요한 건 더 이상 애매한 상태로 오래 끌지 않는 것입니다."
+            "text": "이 관계는 어떤 결론에 가까워지고 있습니다.\n\n좋은 방향이라면 더 안정적인 단계로 넘어갈 수 있고 아니라면 깔끔한 정리가 필요할 수 있어요.\n\n상대도 애매한 상태를 오래 끌기보다 마음속으로 정리를 하고 있는 흐름입니다.\n\n중요한 건 더 이상 같은 자리에서 맴돌지 않고 당신에게 맞는 다음 단계를 선택하는 것입니다."
       }
 ];
-    let selected = false;
-
-    function drawCard(button) {
-      if (selected) return;
-      selected = true;
-      const card = cards[Math.floor(Math.random() * cards.length)];
-      button.classList.add("is-flipped");
-      button.querySelector(".front").innerHTML = `<img src="${card.image}" alt="${card.name} ${card.ko}">`;
-
-      document.querySelectorAll(".card").forEach((item) => {
-        if (item !== button) {
-          item.style.opacity = ".45";
-          item.style.pointerEvents = "none";
-        }
-      });
-
-      setTimeout(() => {
-        document.getElementById("helper").innerText = "선택한 카드의 메시지가 열렸습니다.";
-        document.getElementById("miniSymbol").innerHTML = `<img src="${card.image}" alt="${card.name} ${card.ko}">`;
-        document.getElementById("cardName").innerText = `${card.name} · ${card.ko}`;
-        document.getElementById("keyword").innerText = card.keyword;
-        document.getElementById("cardText").innerText = card.text;
-        document.getElementById("result").style.display = "block";
-        document.getElementById("result").scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 620);
-    }
-
-    function resetCards() {
-      selected = false;
-      document.getElementById("result").style.display = "none";
-      document.getElementById("helper").innerText = "카드를 누르면 바로 결과가 열립니다.";
-      document.querySelectorAll(".card").forEach((item) => {
-        item.classList.remove("is-flipped");
-        item.style.opacity = "1";
-        item.style.pointerEvents = "auto";
-        item.querySelector(".front").innerHTML = "";
-      });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  </script>
-</body>
-</html>
+let selected=false;
+function drawCard(button){if(selected)return;selected=true;const card=cards[Math.floor(Math.random()*cards.length)];button.classList.add("is-flipped");button.querySelector(".front").innerHTML=`<img src="${card.image}" alt="${card.name} ${card.ko}">`;document.querySelectorAll(".card").forEach((item)=>{if(item!==button){item.style.opacity=".45";item.style.pointerEvents="none";}});setTimeout(()=>{document.getElementById("helper").innerText="선택한 카드의 메시지가 열렸습니다.";document.getElementById("miniSymbol").innerHTML=`<img src="${card.image}" alt="${card.name} ${card.ko}">`;document.getElementById("cardName").innerText=`${card.name} · ${card.ko}`;document.getElementById("keyword").innerText=card.keyword;document.getElementById("cardText").innerText=card.text;document.getElementById("result").style.display="block";document.getElementById("result").scrollIntoView({behavior:"smooth",block:"start"});},620);}
+function resetCards(){selected=false;document.getElementById("result").style.display="none";document.getElementById("helper").innerText="카드를 누르면 바로 결과가 열립니다.";document.querySelectorAll(".card").forEach((item)=>{item.classList.remove("is-flipped");item.style.opacity="1";item.style.pointerEvents="auto";item.querySelector(".front").innerHTML="";});window.scrollTo({top:0,behavior:"smooth"});}
+</script></body></html>
